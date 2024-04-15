@@ -13,8 +13,8 @@ jobs:
 
       - name: Setup environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python2.7 python2.7-dev
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y python2.7 python2.7-dev
 
       - name: Download and prepare OpenWRT SDK
         run: |
@@ -23,7 +23,7 @@ jobs:
           mv openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 openwrt-sdk-19.07.7-ar71xx-generic
           
           cd openwrt-sdk-19.07.7-ar71xx-generic
-          echo "src-link frieren ${{ github.workspace }}/packages/openwrt" >> feeds.conf
+          echo "src-link frieren ${{ github.workspace }}/packages/openwrt/19" >> feeds.conf
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -p frieren frieren
