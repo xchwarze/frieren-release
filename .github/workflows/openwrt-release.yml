@@ -34,13 +34,13 @@ jobs:
 
       - name: Configure make options
         run: |
+          cd openwrt-sdk-19.07.7-ar71xx-generic
           echo "CONFIG_PACKAGE_frieren=m" >> .config
           make defconfig
 
       - name: Build package
         run: |
           cd openwrt-sdk-19.07.7-ar71xx-generic
-          make package/frieren/download
           make package/frieren/compile
 
       - name: Move build output
