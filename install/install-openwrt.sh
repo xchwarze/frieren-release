@@ -45,7 +45,7 @@ get_package_url() {
 
 # Main installation function
 install_package() {
-    local version="$(awk -F"'" '/DISTRIB_RELEASE/{print $2}' /etc/openwrt_release)"
+    local version="$(awk -F"'" '/DISTRIB_RELEASE/{print $2}' /etc/openwrt_release | cut -d'.' -f1)"
     local package_url="$(get_package_url "$version")"
 
     if [ -z "$package_url" ]; then
