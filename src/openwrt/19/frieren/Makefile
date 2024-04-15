@@ -70,6 +70,9 @@ define Compile/Backend
 	php $(PKG_BUILD_DIR)/tools/api-clean.php $(PKG_BUILD_DIR)/frieren-back/api $(PKG_BUILD_DIR)/frieren-back/dist/api
 	php $(PKG_BUILD_DIR)/tools/api-clean.php $(PKG_BUILD_DIR)/frieren-back/modules $(PKG_BUILD_DIR)/frieren-back/dist/modules
 
+	# Setup OpenWRT Frieren version
+	cp $(CURDIR)/files/config/config.php $(PKG_BUILD_DIR)/frieren-back/dist/api/config
+
 	# Set execute permissions for any scripts that need it
 	find $(PKG_BUILD_DIR)/frieren-back/dist/api -name "*.sh" -exec chmod +x {} \;
 	find $(PKG_BUILD_DIR)/frieren-back/dist/modules -name "*.sh" -exec chmod +x {} \;
