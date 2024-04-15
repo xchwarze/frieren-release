@@ -45,13 +45,13 @@ jobs:
 
       - name: Move build output
         run: |
-          mkdir -p ${{ github.workspace }}/compiled-packages/openwrt/19
-          cp openwrt-sdk-19.07.7-ar71xx-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/compiled-packages/openwrt/19
+          mkdir -p ${{ github.workspace }}/packages/openwrt/19
+          cp openwrt-sdk-19.07.7-ar71xx-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/19/frieren_latest.ipk
 
       - name: Commit and push compiled packages
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add compiled-packages/openwrt/19/*.ipk
+          git add packages/openwrt/19/*.ipk
           git commit -m "Automated build and deploy of OpenWRT package"
           git push
