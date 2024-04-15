@@ -32,7 +32,7 @@ get_package_url() {
     local package_url=""
 
     if [ "$version" = "19" ]; then
-        package_url="${base_url}/19//frieren_latest.ipk"
+        package_url="${base_url}/19/frieren_latest.ipk"
     elif [ "$version" -ge 20 ]; then
         package_url="${base_url}/latest/frieren_latest.ipk"
     else
