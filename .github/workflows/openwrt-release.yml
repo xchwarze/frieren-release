@@ -18,12 +18,16 @@ jobs:
 
       - name: Download and prepare OpenWRT SDK
         run: |
+          echo "[*] Downloading SDK..."
           wget -q https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+
+          echo "[*] Prepare folder"
           tar xJf openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
           mv openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 openwrt-sdk-19.07.7-ar71xx-generic
-          
+
+          echo "[*] Prepare feeds"
           cd openwrt-sdk-19.07.7-ar71xx-generic
-          echo "src-link frieren ${{ github.workspace }}/packages/openwrt/19" >> feeds.conf
+          echo "src-link frieren ${{ github.workspace }}/src/openwrt/19" >> feeds.conf
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -p frieren frieren
