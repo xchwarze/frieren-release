@@ -61,10 +61,10 @@ define Compile/Frontend
 	yarn build
 
 	# Clean original assets
-	rm -f $(PKG_BUILD_DIR)/frieren-front/dist/assets/*.js
-	rm -f $(PKG_BUILD_DIR)/frieren-front/dist/assets/*.css
-	find $(PKG_BUILD_DIR)/frieren-front/dist -type f -name "*.css.gz" -exec sh -c 'mv "$1" "${1%.css.gz}.css"' _ {} \;
-	find $(PKG_BUILD_DIR)/frieren-front/dist -type f -name "*.js.gz" -exec sh -c 'mv "$1" "${1%.js.gz}.js"' _ {} \;
+	cd $(PKG_BUILD_DIR)/frieren-front/dist/assets && \
+	rm -f *.js *.css && \
+	find . -type f -name "*.css.gz" -exec sh -c 'mv "$$1" "$${1%.css.gz}.css"' _ {} \; && \
+	find . -type f -name "*.js.gz" -exec sh -c 'mv "$$1" "$${1%.js.gz}.js"' _ {} \;
 endef
 
 define Compile/Backend
