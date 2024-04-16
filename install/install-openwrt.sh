@@ -43,6 +43,17 @@ get_package_url() {
     echo "$package_url"
 }
 
+# Function to uninstall old package
+uninstall_old_package() {
+    local package_name="frieren"
+    if opkg list-installed | grep -q "$package_name"; then
+        log "Removing old package $package_name..." "info"
+        opkg remove "$package_name" || handle_error 1 "Failed to remove old package $package_name"
+    else
+        log "No old package $package_name installed, skipping removal." "info"
+    fi
+}
+
 # Main installation function
 install_package() {
     local version="$(awk -F"'" '/DISTRIB_RELEASE/{print $2}' /etc/openwrt_release | cut -d'.' -f1)"
@@ -64,13 +75,14 @@ install_package() {
 
 # Display panel URL
 display_access_url() {
-        local ip_address="$(ip -4 addr show br-lan | awk '/inet/ {print $2}' | cut -d'/' -f1)"
+    local ip_address="$(ip -4 addr show br-lan | awk '/inet/ {print $2}' | cut -d'/' -f1)"
     log "To access the Frieren web interface, open a web browser and navigate to: http://$ip_address:5000/" "info"
 }
 
 # Ensure the script is running on OpenWRT
 if [ -f "/etc/openwrt_release" ]; then
     log "OpenWRT system detected, proceeding with installation..." "info"
+    uninstall_old_package
     install_package
     display_access_url
 else
