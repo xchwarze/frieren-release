@@ -21,7 +21,7 @@ define Package/frieren
 	CATEGORY:=Utilities
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
-	DEPENDS:=+nginx +php7-fpm +php7-mod-hash +php7-mod-json +php7-mod-mbstring +php7-mod-session +php7-mod-sqlite3
+	DEPENDS:=+nginx +php7-fpm +php7-mod-hash +php7-mod-json +php7-mod-mbstring +php7-mod-session +php7-mod-sqlite3 +usbutils +ttyd
 	ARCH:=all
 endef
 
@@ -32,13 +32,8 @@ endef
 define Build/Prepare
 	$(call Build/Prepare/Default)
 
-	# Fetch release info
-	GIT_REV=$$(git -C $(PKG_BUILD_DIR) rev-parse --short HEAD); \
-	APP_VERSION=$$(grep '"version":' $(PKG_BUILD_DIR)/frieren-front/package.json | awk -F'"' '{print $$4}'); \
-
-	# Update the .env.prod file
-	sed -i 's/PLACEHOLDER_BUILD/$${GIT_REV}/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod; \
-	sed -i 's/PLACEHOLDER_VERSION/$${APP_VERSION}/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
+	# Update the .env.prod file with release info
+	sed -i 's/PLACEHOLDER_BUILD/'"$(shell date "+%m/%d/%Y %H:%M")"'/g' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
 endef
 
 define Build/Compile
@@ -85,9 +80,11 @@ define Package/frieren/install
 	$(INSTALL_DIR) $(1)/etc/nginx
 	$(INSTALL_DIR) $(1)/etc/php7-fpm.d
 	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_DIR) $(1)/etc/config
 
 	$(INSTALL_CONF) ./files/etc/nginx/nginx.conf $(1)/etc/nginx/
 	$(INSTALL_CONF) ./files/etc/php7-fpm.d/www.conf $(1)/etc/php7-fpm.d/
+	$(INSTALL_CONF) ./files/etc/config/frieren $(1)/etc/config/
 	$(INSTALL_CONF) ./files/etc/php.ini $(1)/etc/
 	$(INSTALL_BIN) ./files/etc/init.d/php7-fpm $(1)/etc/init.d/
 

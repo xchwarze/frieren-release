@@ -49,8 +49,6 @@ uninstall_old_package() {
     if opkg list-installed | grep -q "$package_name"; then
         log "Removing old package $package_name..." "info"
         opkg remove "$package_name" || handle_error 1 "Failed to remove old package $package_name"
-    else
-        log "No old package $package_name installed, skipping removal." "info"
     fi
 }
 
