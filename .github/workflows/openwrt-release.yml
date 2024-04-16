@@ -41,7 +41,7 @@ jobs:
       - name: Build package
         run: |
           cd openwrt-sdk-19.07.7-ar71xx-generic
-          make package/frieren/compile
+          make -j1 V=s package/frieren/compile
 
       - name: Move build output
         run: |
