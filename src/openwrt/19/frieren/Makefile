@@ -63,8 +63,8 @@ define Compile/Frontend
 	# Clean original assets
 	cd $(PKG_BUILD_DIR)/frieren-front/dist/assets && \
 	rm -f *.js *.css && \
-	find . -type f -name "*.css.gz" -exec sh -c 'mv "$${1}" "$${1%.css.gz}.css"' sh {} \; && \
-	find . -type f -name "*.js.gz" -exec sh -c 'mv "$${1}" "$${1%.js.gz}.js"' sh {} \;
+	mv index.js.gz index.js && \
+	mv index.css.gz index.css
 endef
 
 define Compile/Backend
