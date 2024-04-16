@@ -9,16 +9,43 @@ This repository serves as the primary hub for the distribution of the Frieren pr
 
 ## Installation
 
-To install Frieren using the scripts provided in this repository, navigate to the `/install` directory and follow the instructions in the scripts. The typical installation process would look something like this:
+Frieren is currently fully supported only on OpenWRT platforms. As a result, distributable releases are specifically compiled for this architecture. Below are the instructions for both automated and manual installation methods on OpenWRT:
+
+### Automatic Installation
+
+We recommend using the automated install script for a convenient and straightforward installation process. This is the preferred method. To install Frieren using the automated script on your OpenWRT device, run the following command in your terminal:
 
 ```bash
-cd install
-bash install-frieren.sh
+wget -qO- https://raw.githubusercontent.com/xchwarze/frieren-release/master/install/install-openwrt.sh | sh
 ```
+
+This command fetches and executes the installation script automatically, ensuring that Frieren is configured and installed correctly on your device.
+
+### Manual Installation
+
+If you prefer to manually install Frieren, or if you need more control over the installation process, follow these steps:
+
+1. **Download the Package**
+   Download the latest version of the `frieren_latest.ipk` package from the `packages/openwrt/19` directory in our repository.
+
+2. **Install the Package**
+   Install the downloaded package using `opkg`, the default package manager for OpenWRT:
+
+   ```bash
+   opkg install /tmp/frieren_latest.ipk
+   ```
 
 ## Usage
 
-Once installed, Frieren can be accessed through its web interface or via API calls, depending on your installation type and configuration. Please refer to the main [Frieren repository](https://github.com/xchwarze/frieren) for detailed documentation on using and configuring Frieren.
+Once installed, Frieren can be accessed through its web interface or via API calls, depending on your installation type and configuration. By default, Frieren is installed in the `/usr/share/frieren` directory on your device.
+
+To access the Frieren web interface, open a web browser and navigate to the IP address of your OpenWRT device followed by port 5000. For a typical installation, you would enter the following URL:
+
+```
+http://192.168.1.1:5000/
+```
+
+Please ensure that your device’s IP address is correctly configured and that you are connected to the correct network. For more detailed information on using and configuring Frieren, please refer to the [Frieren repository](https://github.com/xchwarze/frieren).
 
 ## Contributing
 

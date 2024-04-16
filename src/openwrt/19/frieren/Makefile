@@ -63,6 +63,8 @@ define Compile/Frontend
 	# Clean original assets
 	rm -f $(PKG_BUILD_DIR)/frieren-front/dist/assets/*.js
 	rm -f $(PKG_BUILD_DIR)/frieren-front/dist/assets/*.css
+	find dist -type f -name "*.css.gz" -exec sh -c 'mv "$1" "${1%.css.gz}.css"' _ {} \;
+	find dist -type f -name "*.js.gz" -exec sh -c 'mv "$1" "${1%.js.gz}.js"' _ {} \;
 endef
 
 define Compile/Backend
@@ -86,7 +88,7 @@ define Package/frieren/install
 
 	$(INSTALL_CONF) ./files/etc/nginx/nginx.conf $(1)/etc/nginx/
 	$(INSTALL_CONF) ./files/etc/php7-fpm.d/www.conf $(1)/etc/php7-fpm.d/
-	$(INSTALL_CONF) ./files/etc/php7-fpm.conf $(1)/etc/
+	$(INSTALL_CONF) ./files/etc/php.ini $(1)/etc/
 	$(INSTALL_BIN) ./files/etc/init.d/php7-fpm $(1)/etc/init.d/
 
 	$(CP) -r $(PKG_BUILD_DIR)/frieren $(1)/usr/share/
