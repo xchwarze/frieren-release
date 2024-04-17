@@ -21,7 +21,7 @@ define Package/frieren
 	CATEGORY:=Utilities
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
-	DEPENDS:=+nginx +php7-fpm +php7-mod-hash +php7-mod-json +php7-mod-mbstring +php7-mod-session +php7-mod-sqlite3 +usbutils +ttyd
+	DEPENDS:=+nginx +php7-fpm +php7-mod-hash +php7-mod-json +php7-mod-mbstring +php7-mod-session +php7-mod-sqlite3 +coreutils-nohup +usbutils +ttyd
 	ARCH:=all
 endef
 
@@ -34,7 +34,6 @@ define Build/Prepare
 
 	# Update the .env.prod file with release info
 	sed -i 's/PLACEHOLDER_BUILD/master/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
-	sed -i 's/PLACEHOLDER_VERSION/1.0.0-ipk/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
 endef
 
 define Build/Compile
