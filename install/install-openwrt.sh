@@ -1,43 +1,29 @@
 #!/bin/sh
 
+# Define constants
+BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
+PACKAGE_NAME="frieren"
+
 # Logger function
 log() {
-    local message="$1"
-    local type="$2"
-    local timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-    local prefix=""
-
-    case "$type" in
-        "info") prefix="[INFO]" ;;
-        "success") prefix="[SUCCESS]" ;;
-        "error") prefix="[ERROR]" ;;
-        *) prefix="[LOG]" ;;
-    esac
-
-    echo "$timestamp $prefix $message"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [$2] $1"
 }
 
 # Error handler function
 handle_error() {
-    local exit_code="$1"
-    local error_message="$2"
-    log "Error: $error_message (Exit Code: $exit_code)" "error"
-    exit "$exit_code"
+    log "Error: $2 (Exit Code: $1)" "ERROR"
+    exit "$1"
 }
 
 # Function to check OpenWRT version and return package URL
 get_package_url() {
     local version="$1"
-    local base_url="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
     local package_url=""
 
     if [ "$version" = "19" ]; then
-        package_url="${base_url}/19/frieren_latest.ipk"
+        package_url="${BASE_URL}/19/${PACKAGE_NAME}_latest.ipk"
     elif [ "$version" -ge 20 ]; then
-        package_url="${base_url}/latest/frieren_latest.ipk"
-    else
-        log "Unsupported version: OpenWRT $version" "error"
-        exit 1
+        package_url="${BASE_URL}/latest/${PACKAGE_NAME}_latest.ipk"
     fi
 
     echo "$package_url"
@@ -45,10 +31,9 @@ get_package_url() {
 
 # Function to uninstall old package
 uninstall_old_package() {
-    local package_name="frieren"
-    if opkg list-installed | grep -q "$package_name"; then
-        log "Removing old package $package_name..." "info"
-        opkg remove "$package_name" || handle_error 1 "Failed to remove old package $package_name"
+    if opkg list-installed | grep -q "$PACKAGE_NAME"; then
+        log "Removing old package $PACKAGE_NAME..." "INFO"
+        opkg remove "$PACKAGE_NAME" || handle_error 1 "Failed to remove old package $PACKAGE_NAME"
     fi
 }
 
@@ -61,29 +46,34 @@ install_package() {
         handle_error 1 "Failed to obtain package URL for version $version"
     fi
 
-    log "Downloading and installing package for OpenWRT $version..." "info"
+    log "Downloading and installing package for OpenWRT $version..." "INFO"
     wget -qO /tmp/package.ipk "$package_url" && opkg install /tmp/package.ipk
 
-    if [ $? -eq 0 ]; then
-        log "Package installation completed successfully" "success"
-    else
-        handle_error 1 "Package installation failed"
-    fi
+    [ $? -eq 0 ] || handle_error 1 "Package installation failed"
+    log "Package installation completed successfully" "SUCCESS"
 }
 
 # Display panel URL
 display_access_url() {
     local ip_address="$(ip -4 addr show br-lan | awk '/inet/ {print $2}' | cut -d'/' -f1)"
-    log "To access the Frieren web interface, open a web browser and navigate to: http://$ip_address:5000/" "info"
+    log "To access the Frieren web interface, open a web browser and navigate to: http://$ip_address:5000/" "INFO"
+}
+
+# Restart necessary services
+restart_services() {
+    log "Restarting PHP7-FPM and NGINX..." "INFO"
+    /etc/init.d/php7-fpm restart
+    /etc/init.d/nginx restart
 }
 
 # Ensure the script is running on OpenWRT
 if [ -f "/etc/openwrt_release" ]; then
-    log "OpenWRT system detected, proceeding with installation..." "info"
+    log "OpenWRT system detected, proceeding with installation..." "INFO"
     uninstall_old_package
     install_package
+    restart_services
     display_access_url
 else
-    log "This script is only supported on OpenWRT systems." "error"
+    log "This script is only supported on OpenWRT systems." "ERROR"
     exit 1
 fi
