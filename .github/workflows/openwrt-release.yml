@@ -53,14 +53,13 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           
-          git fetch origin master
-          git rebase origin/master
-          git add -f packages/openwrt/19/*.ipk
+          git add packages/openwrt/19/*.ipk
           git commit -m "Automated build and deploy of OpenWRT legacy package"
           git push
 
 
   build:
+    needs: build_legacy
     runs-on: ubuntu-20.04
 
     steps:
@@ -102,7 +101,7 @@ jobs:
       - name: Move build output
         run: |
           mkdir -p ${{ github.workspace }}/packages/openwrt/latest
-          cp openwrt-sdk-23.05.3-ath79-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/23/frieren_latest.ipk
+          cp openwrt-sdk-23.05.3-ath79-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/latest/frieren_latest.ipk
 
 
       - name: Commit and push compiled packages
@@ -110,8 +109,6 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           
-          git fetch origin master
-          git rebase origin/master
-          git add -f packages/openwrt/latest/*.ipk
+          git add packages/openwrt/latest/*.ipk
           git commit -m "Automated build and deploy of OpenWRT package"
           git push
