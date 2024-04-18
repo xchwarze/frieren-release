@@ -4,6 +4,67 @@ on:
   workflow_dispatch:
 
 jobs:
+  build_legacy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y python2.7 python2.7-dev
+
+      - name: Download and prepare OpenWRT SDK
+        run: |
+          echo "[*] Downloading SDK..."
+          wget -q https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+
+          echo "[*] Prepare folder"
+          tar xJf openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+          mv openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 openwrt-sdk-19.07.7-ar71xx-generic
+
+          echo "[*] Prepare feeds"
+          cd openwrt-sdk-19.07.7-ar71xx-generic
+          echo "src-link frieren ${{ github.workspace }}/src/openwrt/19" >> feeds.conf
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install -p frieren frieren
+
+      - name: Configure make options
+        run: |
+          cd openwrt-sdk-19.07.7-ar71xx-generic
+          echo "CONFIG_PACKAGE_frieren=m" >> .config
+          make defconfig
+
+      - name: Build package
+        run: |
+          cd openwrt-sdk-19.07.7-ar71xx-generic
+          make -j1 V=s package/frieren/compile
+
+      - name: Move build output
+        run: |
+          mkdir -p ${{ github.workspace }}/packages/openwrt/19
+          cp openwrt-sdk-19.07.7-ar71xx-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/19/frieren_latest.ipk
+
+      - name: Commit and push compiled packages
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+          git fetch origin master
+          git rebase origin/master
+          git add packages/openwrt/19/*.ipk
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Automated build and deploy of OpenWRT legacy package"
+            git push
+          fi
+
+
   build:
     runs-on: ubuntu-20.04
 
@@ -54,6 +115,13 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           
+          git fetch origin master
+          git rebase origin/master
           git add packages/openwrt/latest/*.ipk
-          git commit -m "Automated build and deploy of OpenWRT package"
-          git push
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Automated build and deploy of OpenWRT package"
+            git push
+          fi
