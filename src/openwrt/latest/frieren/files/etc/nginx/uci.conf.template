@@ -1,0 +1,41 @@
+# Consider using UCI or creating files in /etc/nginx/conf.d/ for configuration.
+# Parsing UCI configuration is skipped if uci set nginx.global.uci_enable=false
+# For details see: https://openwrt.org/docs/guide-user/services/webserver/nginx
+# UCI_CONF_VERSION=1.2
+
+worker_processes auto;
+
+user root;
+
+include module.d/*.module;
+
+events {}
+
+http {
+	access_log off;
+	log_format openwrt
+		'$request_method $scheme://$host$request_uri => $status'
+		' (${body_bytes_sent}B in ${request_time}s) <- $http_referer';
+
+	include mime.types;
+	default_type text/html;
+	sendfile on;
+	keepalive_timeout 65;
+
+	client_max_body_size 2M;
+	large_client_header_buffers 4 8k;
+
+	# Gzip Settings
+	#gzip on;
+	#gzip_min_length 1k;
+	#gzip_buffers 16 8k;
+	#gzip_http_version 1.1;
+	#gzip_comp_level 3;
+	#gzip_types text/plain application/javascript text/css application/xml;
+	#gzip_vary on;
+
+	root /www;
+
+	#UCI_HTTP_CONFIG
+	include conf.d/*.conf;
+}
