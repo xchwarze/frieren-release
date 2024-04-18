@@ -85,6 +85,7 @@ define Package/frieren/install
 
 	$(INSTALL_CONF) ./files/etc/nginx/uci.conf.template $(1)/etc/nginx/
 	$(INSTALL_CONF) ./files/etc/php8-fpm.d/www.conf $(1)/etc/php8-fpm.d/
+	$(INSTALL_CONF) ./files/etc/config/nginx $(1)/etc/config/
 	$(INSTALL_CONF) ./files/etc/config/frieren $(1)/etc/config/
 	$(INSTALL_CONF) ./files/etc/php.ini $(1)/etc/
 

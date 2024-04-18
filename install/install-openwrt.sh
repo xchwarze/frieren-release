@@ -46,6 +46,9 @@ install_package() {
         handle_error 1 "Failed to obtain package URL for version $version"
     fi
 
+    log "Updating package lists..." "INFO"
+    opkg update || handle_error 1 "Failed to update package lists"
+
     log "Downloading and installing package for OpenWRT $version..." "INFO"
     wget -qO /tmp/package.ipk "$package_url" && opkg install /tmp/package.ipk
 
@@ -61,9 +64,14 @@ display_access_url() {
 
 # Restart necessary services
 restart_services() {
-    log "Restarting PHP7-FPM and NGINX..." "INFO"
-    /etc/init.d/php7-fpm restart
+    log "Restarting PHP-FPM and NGINX..." "INFO"
     /etc/init.d/nginx restart
+
+    if [ -f "/etc/php8-fpm.conf" ]; then    
+        /etc/init.d/php8-fpm restart
+    else
+        /etc/init.d/php7-fpm restart
+    fi
 }
 
 # Ensure the script is running on OpenWRT
