@@ -88,7 +88,7 @@ define Package/frieren/install
 	$(INSTALL_CONF) ./files/etc/config/frieren $(1)/etc/config/
 	$(INSTALL_CONF) ./files/etc/php.ini $(1)/etc/
 
-	$(INSTALL_BIN) ./files/etc/init.d/php8-fpm.d $(1)/etc/init.d/
+	$(INSTALL_BIN) ./files/etc/init.d/php8-fpm $(1)/etc/init.d/
 
 	$(CP) ./files/etc/nginx/conf.d/* $(1)/etc/nginx/conf.d/
 	$(CP) -r $(PKG_BUILD_DIR)/frieren $(1)/usr/share/
