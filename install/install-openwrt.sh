@@ -4,6 +4,9 @@
 BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
 PACKAGE_NAME="frieren"
 
+# Get force install option from command line (if provided)
+FORCE_INSTALL=$1
+
 # Logger function
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [$2] $1"
@@ -12,6 +15,10 @@ log() {
 # Error handler function
 handle_error() {
     log "Error: $2 (Exit Code: $1)" "ERROR"
+    if [ "$1" -eq 1 ] && [ -z "$FORCE_INSTALL" ]; then
+        log "Tip: Run the script with '-f' to force the installation if you encounter file clashes." "INFO"
+    fi
+
     exit "$1"
 }
 
@@ -50,9 +57,14 @@ install_package() {
     opkg update || handle_error 1 "Failed to update package lists"
 
     log "Downloading and installing package for OpenWRT $version..." "INFO"
-    wget -qO /tmp/package.ipk "$package_url" && opkg install /tmp/package.ipk
+    wget -qO /tmp/package.ipk "$package_url" && {
+        if [ "$FORCE_INSTALL" = "-f" ]; then
+            opkg install --force-overwrite /tmp/package.ipk || handle_error 1 "Package installation failed, even with force-overwrite"
+        else
+            opkg install /tmp/package.ipk || handle_error 1 "Package installation failed"
+        fi
+    }
 
-    [ $? -eq 0 ] || handle_error 1 "Package installation failed"
     log "Package installation completed successfully" "SUCCESS"
 }
 
