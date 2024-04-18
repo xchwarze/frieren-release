@@ -5,6 +5,7 @@ on:
 
 jobs:
   build:
+    needs: build_legacy
     runs-on: ubuntu-20.04
 
     steps:
@@ -19,39 +20,41 @@ jobs:
       - name: Download and prepare OpenWRT SDK
         run: |
           echo "[*] Downloading SDK..."
-          wget -q https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+          wget -q https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
 
           echo "[*] Prepare folder"
-          tar xJf openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
-          mv openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 openwrt-sdk-19.07.7-ar71xx-generic
+          tar xJf openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+          mv openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64 openwrt-sdk-23.05.3-ath79-generic
 
           echo "[*] Prepare feeds"
-          cd openwrt-sdk-19.07.7-ar71xx-generic
-          echo "src-link frieren ${{ github.workspace }}/src/openwrt/19" >> feeds.conf
+          cd openwrt-sdk-23.05.3-ath79-generic
+          echo "src-link frieren ${{ github.workspace }}/src/openwrt/latest" >> feeds.conf
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -p frieren frieren
 
       - name: Configure make options
         run: |
-          cd openwrt-sdk-19.07.7-ar71xx-generic
+          cd openwrt-sdk-23.05.3-ath79-generic
           echo "CONFIG_PACKAGE_frieren=m" >> .config
           make defconfig
 
       - name: Build package
         run: |
-          cd openwrt-sdk-19.07.7-ar71xx-generic
+          cd openwrt-sdk-23.05.3-ath79-generic
           make -j1 V=s package/frieren/compile
 
       - name: Move build output
         run: |
-          mkdir -p ${{ github.workspace }}/packages/openwrt/19
-          cp openwrt-sdk-19.07.7-ar71xx-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/19/frieren_latest.ipk
+          mkdir -p ${{ github.workspace }}/packages/openwrt/latest
+          cp openwrt-sdk-23.05.3-ath79-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/latest/frieren_latest.ipk
+
 
       - name: Commit and push compiled packages
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add packages/openwrt/19/*.ipk
+          
+          git add packages/openwrt/latest/*.ipk
           git commit -m "Automated build and deploy of OpenWRT package"
           git push
