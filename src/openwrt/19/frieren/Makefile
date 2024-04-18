@@ -22,7 +22,7 @@ define Package/frieren
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
 	DEPENDS:=+nginx +php7-fpm +php7-mod-hash +php7-mod-json +php7-mod-mbstring +php7-mod-session +php7-mod-sqlite3 +coreutils-nohup +usbutils +ttyd
-	ARCH:=all
+	PKGARCH:=all
 endef
 
 define Package/frieren/description
