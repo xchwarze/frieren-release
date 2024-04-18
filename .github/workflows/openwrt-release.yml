@@ -11,7 +11,7 @@ jobs:
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
       REPO_DIR: ${{ github.workspace }}/repo-source
-      IPK_OUTPUT_DIR: ${{ github.workspace }}/packages/openwrt/19
+      IPK_OUTPUT_DIR: ${{ github.workspace }}/repo-source/packages/openwrt/19
 
     steps:
       - name: Setup environment
@@ -78,7 +78,7 @@ jobs:
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
       REPO_DIR: ${{ github.workspace }}/repo-source
-      IPK_OUTPUT_DIR: ${{ github.workspace }}/packages/openwrt/latest
+      IPK_OUTPUT_DIR: ${{ github.workspace }}/repo-source/packages/openwrt/latest
 
     steps:
       - name: Checkout code
