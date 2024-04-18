@@ -41,7 +41,7 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -p frieren frieren
-          
+
           echo "[*] Build ipk"
           echo "CONFIG_PACKAGE_frieren=m" >> .config
           make defconfig
@@ -69,7 +69,7 @@ jobs:
           else
             git commit -m "Automated build and deploy of OpenWRT legacy package"
             git push
-
+          fi
 
   build:
     runs-on: ubuntu-20.04
@@ -103,7 +103,7 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -p frieren frieren
-          
+
           echo "[*] Build ipk"
           echo "CONFIG_PACKAGE_frieren=m" >> .config
           make defconfig
@@ -131,3 +131,4 @@ jobs:
           else
             git commit -m "Automated build and deploy of OpenWRT package"
             git push
+          fi
