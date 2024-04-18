@@ -6,122 +6,128 @@ on:
 jobs:
   build_legacy:
     runs-on: ubuntu-20.04
+    env:
+      SDK_URL: https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+      BUILD_DIR: ${{ github.workspace }}/build-env
+      SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
+      REPO_DIR: ${{ github.workspace }}/repo-source
+      IPK_OUTPUT_DIR: ${{ github.workspace }}/packages/openwrt/19
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Setup environment
         run: |
           sudo apt-get update -qq
           sudo apt-get install -qq -y python2.7 python2.7-dev
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: 'repo-source'
+
       - name: Download and prepare OpenWRT SDK
         run: |
           echo "[*] Downloading SDK..."
-          wget -q https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+          wget -q $SDK_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
-          tar xJf openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
-          mv openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 openwrt-sdk-19.07.7-ar71xx-generic
-
-          echo "[*] Prepare feeds"
-          cd openwrt-sdk-19.07.7-ar71xx-generic
-          echo "src-link frieren ${{ github.workspace }}/src/openwrt/19" >> feeds.conf
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-          ./scripts/feeds install -p frieren frieren
-
-      - name: Configure make options
-        run: |
-          cd openwrt-sdk-19.07.7-ar71xx-generic
-          echo "CONFIG_PACKAGE_frieren=m" >> .config
-          make defconfig
+          tar xJf $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
+          mv $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 $SDK_DIR
 
       - name: Build package
         run: |
-          cd openwrt-sdk-19.07.7-ar71xx-generic
+          echo "[*] Prepare feeds"
+          cd $SDK_DIR
+          echo "src-link frieren $REPO_DIR/src/openwrt/19" >> feeds.conf
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install -p frieren frieren
+          
+          echo "[*] Build ipk"
+          echo "CONFIG_PACKAGE_frieren=m" >> .config
+          make defconfig
           make -j1 V=s package/frieren/compile
+
+      - name: Sync repos
+        run: |
+          cd $REPO_DIR
+          git fetch origin master
+          git rebase origin/master
 
       - name: Move build output
         run: |
-          mkdir -p ${{ github.workspace }}/packages/openwrt/19
-          cp openwrt-sdk-19.07.7-ar71xx-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/19/frieren_latest.ipk
+          mkdir -p $IPK_OUTPUT_DIR
+          cp $SDK_DIR/bin/packages/*/*/*.ipk $IPK_OUTPUT_DIR/frieren_latest.ipk
 
       - name: Commit and push compiled packages
         run: |
+          cd $REPO_DIR
           git config user.name github-actions
           git config user.email github-actions@github.com
-          
-          git fetch origin master
-          git rebase origin/master
           git add packages/openwrt/19/*.ipk
-
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
             git commit -m "Automated build and deploy of OpenWRT legacy package"
             git push
-          fi
 
 
   build:
     runs-on: ubuntu-20.04
+    env:
+      SDK_URL: https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+      BUILD_DIR: ${{ github.workspace }}/build-env
+      SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
+      REPO_DIR: ${{ github.workspace }}/repo-source
+      IPK_OUTPUT_DIR: ${{ github.workspace }}/packages/openwrt/latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup environment
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qq -y python2.7 python2.7-dev
+        with:
+          path: 'repo-source'
 
       - name: Download and prepare OpenWRT SDK
         run: |
           echo "[*] Downloading SDK..."
-          wget -q https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+          wget -q $SDK_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
-          tar xJf openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
-          mv openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64 openwrt-sdk-23.05.3-ath79-generic
-
-          echo "[*] Prepare feeds"
-          cd openwrt-sdk-23.05.3-ath79-generic
-          echo "src-link frieren ${{ github.workspace }}/src/openwrt/latest" >> feeds.conf
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-          ./scripts/feeds install -p frieren frieren
-
-      - name: Configure make options
-        run: |
-          cd openwrt-sdk-23.05.3-ath79-generic
-          echo "CONFIG_PACKAGE_frieren=m" >> .config
-          make defconfig
+          tar xJf $BUILD_DIR/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
+          mv $BUILD_DIR/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64 $SDK_DIR
 
       - name: Build package
         run: |
-          cd openwrt-sdk-23.05.3-ath79-generic
+          echo "[*] Prepare feeds"
+          cd $SDK_DIR
+          echo "src-link frieren $REPO_DIR/src/openwrt/latest" >> feeds.conf
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install -p frieren frieren
+          
+          echo "[*] Build ipk"
+          echo "CONFIG_PACKAGE_frieren=m" >> .config
+          make defconfig
           make -j1 V=s package/frieren/compile
+
+      - name: Sync repos
+        run: |
+          cd $REPO_DIR
+          git fetch origin master
+          git rebase origin/master
 
       - name: Move build output
         run: |
-          mkdir -p ${{ github.workspace }}/packages/openwrt/latest
-          cp openwrt-sdk-23.05.3-ath79-generic/bin/packages/*/*/*.ipk ${{ github.workspace }}/packages/openwrt/latest/frieren_latest.ipk
-
+          mkdir -p $IPK_OUTPUT_DIR
+          cp $SDK_DIR/bin/packages/*/*/*.ipk $IPK_OUTPUT_DIR/frieren_latest.ipk
 
       - name: Commit and push compiled packages
         run: |
+          cd $REPO_DIR
           git config user.name github-actions
           git config user.email github-actions@github.com
-          
-          git fetch origin master
-          git rebase origin/master
           git add packages/openwrt/latest/*.ipk
-
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
             git commit -m "Automated build and deploy of OpenWRT package"
             git push
-          fi
