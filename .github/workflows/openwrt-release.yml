@@ -7,7 +7,8 @@ jobs:
   build_legacy:
     runs-on: ubuntu-22.04
     env:
-      SDK_TARGET_URL: https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+      SDK_TARGET_NAME: openwrt-sdk-19.07.10-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64
+      SDK_TARGET_URL: https://downloads.openwrt.org/releases/19.07.10/targets/ar71xx/generic/openwrt-sdk-19.07.10-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
       REPO_DIR: ${{ github.workspace }}/repo-source
@@ -30,8 +31,8 @@ jobs:
           wget -q $SDK_TARGET_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
-          tar xJf $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
-          mv $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 $SDK_DIR
+          tar xJf $BUILD_DIR/$SDK_TARGET_NAME.tar.xz -C $BUILD_DIR
+          mv $BUILD_DIR/$SDK_TARGET_NAME $SDK_DIR
 
       - name: Build package
         env:
@@ -77,6 +78,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
+      SDK_TARGET_NAME: openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64
       SDK_TARGET_URL: https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
@@ -95,8 +97,8 @@ jobs:
           wget -q $SDK_TARGET_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
-          tar xJf $BUILD_DIR/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
-          mv $BUILD_DIR/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64 $SDK_DIR
+          tar xJf $BUILD_DIR/$SDK_TARGET_NAME.tar.xz -C $BUILD_DIR
+          mv $BUILD_DIR/$SDK_TARGET_NAME $SDK_DIR
 
       - name: Build package
         run: |
