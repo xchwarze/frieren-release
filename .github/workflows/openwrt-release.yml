@@ -34,6 +34,9 @@ jobs:
           mv $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64 $SDK_DIR
 
       - name: Build package
+        env:
+          # try to fix "Build dependency: Please install the GNU C Compiler (gcc) 4.8 or later"
+          FORCE: "1" 
         run: |
           echo "[*] Prepare feeds"
           cd $SDK_DIR
@@ -44,8 +47,8 @@ jobs:
 
           echo "[*] Build ipk"
           echo "CONFIG_PACKAGE_frieren=m" >> .config
-          make FORCE=1 defconfig
-          make FORCE=1 -j1 V=s package/frieren/compile
+          make defconfig
+          make -j1 V=s package/frieren/compile
 
       - name: Sync repos
         run: |
