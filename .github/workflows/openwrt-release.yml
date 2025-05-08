@@ -5,9 +5,9 @@ on:
 
 jobs:
   build_legacy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
-      SDK_URL: https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
+      SDK_TARGET_URL: https://downloads.openwrt.org/releases/19.07.7/targets/ar71xx/generic/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
       REPO_DIR: ${{ github.workspace }}/repo-source
@@ -27,7 +27,7 @@ jobs:
       - name: Download and prepare OpenWRT SDK
         run: |
           echo "[*] Downloading SDK..."
-          wget -q $SDK_URL -P $BUILD_DIR
+          wget -q $SDK_TARGET_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
           tar xJf $BUILD_DIR/openwrt-sdk-19.07.7-ar71xx-generic_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
@@ -55,15 +55,15 @@ jobs:
 
       - name: Move build output
         run: |
-          mkdir -p $IPK_OUTPUT_DIR
-          cp $SDK_DIR/bin/packages/*/*/*.ipk $IPK_OUTPUT_DIR/frieren_latest.ipk
+          mkdir -p "$IPK_OUTPUT_DIR"
+          cp $SDK_DIR/bin/packages/*/*/*.ipk "$IPK_OUTPUT_DIR/"
 
       - name: Commit and push compiled packages
         run: |
           cd $REPO_DIR
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add packages/openwrt/19/*.ipk
+          git add packages
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
@@ -72,9 +72,9 @@ jobs:
           fi
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
-      SDK_URL: https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
+      SDK_TARGET_URL: https://downloads.openwrt.org/releases/23.05.3/targets/ath79/generic/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz
       BUILD_DIR: ${{ github.workspace }}/build-env
       SDK_DIR: ${{ github.workspace }}/build-env/openwrt-sdk
       REPO_DIR: ${{ github.workspace }}/repo-source
@@ -89,7 +89,7 @@ jobs:
       - name: Download and prepare OpenWRT SDK
         run: |
           echo "[*] Downloading SDK..."
-          wget -q $SDK_URL -P $BUILD_DIR
+          wget -q $SDK_TARGET_URL -P $BUILD_DIR
 
           echo "[*] Prepare folder"
           tar xJf $BUILD_DIR/openwrt-sdk-23.05.3-ath79-generic_gcc-12.3.0_musl.Linux-x86_64.tar.xz -C $BUILD_DIR
@@ -117,15 +117,15 @@ jobs:
 
       - name: Move build output
         run: |
-          mkdir -p $IPK_OUTPUT_DIR
-          cp $SDK_DIR/bin/packages/*/*/*.ipk $IPK_OUTPUT_DIR/frieren_latest.ipk
+          mkdir -p "$IPK_OUTPUT_DIR"
+          cp $SDK_DIR/bin/packages/*/*/*.ipk "$IPK_OUTPUT_DIR/"
 
       - name: Commit and push compiled packages
         run: |
           cd $REPO_DIR
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add packages/openwrt/latest/*.ipk
+          git add packages
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
