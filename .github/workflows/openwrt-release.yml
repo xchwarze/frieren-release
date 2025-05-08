@@ -44,8 +44,8 @@ jobs:
 
           echo "[*] Build ipk"
           echo "CONFIG_PACKAGE_frieren=m" >> .config
-          make defconfig
-          make -j1 V=s package/frieren/compile
+          make FORCE=1 defconfig
+          make FORCE=1 -j1 V=s package/frieren/compile
 
       - name: Sync repos
         run: |
