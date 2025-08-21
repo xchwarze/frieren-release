@@ -12,7 +12,7 @@ PKG_MAINTAINER:=DSR! <xchwarze@gmail.com>
 PKG_LICENSE:=LGPL-3.0-only
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-HOST_BUILD_DEPENDS:=nodejs/host yarn/host
+HOST_BUILD_DEPENDS:=nodejs/host yarn/host php/host
 
 include $(INCLUDE_DIR)/package.mk
 
