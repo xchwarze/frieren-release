@@ -23,13 +23,12 @@ handle_error() {
 }
 
 # Function to check OpenWRT version and return package URL
+# Frieren is developed and tested for OpenWrt 24.x
 get_package_url() {
     local version="$1"
     local package_url=""
 
-    if [ "$version" = "19" ]; then
-        package_url="${BASE_URL}/19/${PACKAGE_NAME}_latest.ipk"
-    elif [ "$version" -ge 20 ]; then
+    if [ "$version" -ge 20 ]; then
         package_url="${BASE_URL}/latest/${PACKAGE_NAME}_latest.ipk"
     fi
 
@@ -50,7 +49,7 @@ install_package() {
     local package_url="$(get_package_url "$version")"
 
     if [ -z "$package_url" ]; then
-        handle_error 1 "Failed to obtain package URL for version $version"
+        handle_error 1 "OpenWrt version $version is not supported. Frieren requires OpenWrt 20 or later (developed for OpenWrt 24.x)"
     fi
 
     log "Updating package lists..." "INFO"
@@ -71,7 +70,12 @@ install_package() {
 # Display panel URL
 display_access_url() {
     local ip_address="$(ip -4 addr show br-lan | awk '/inet/ {print $2}' | cut -d'/' -f1)"
-    log "To access the Frieren web interface, open a web browser and navigate to: http://$ip_address:5000/" "INFO"
+    if [ -z "$ip_address" ]; then
+        log "Could not detect br-lan IP address. The OpenWrt version may not be supported." "WARNING"
+        log "Verify that your device has a valid network configuration and try accessing the panel manually on port 5000." "INFO"
+    else
+        log "To access the Frieren web interface, open a web browser and navigate to: http://$ip_address:5000/" "INFO"
+    fi
 }
 
 # Restart necessary services
@@ -88,7 +92,8 @@ restart_services() {
 
 # Ensure the script is running on OpenWRT
 if [ -f "/etc/openwrt_release" ]; then
-    log "OpenWRT system detected, proceeding with installation..." "INFO"
+    log "OpenWrt system detected, proceeding with installation..." "INFO"
+    log "Note: Frieren is developed and tested for OpenWrt 24.x" "INFO"
     uninstall_old_package
     install_package
     restart_services
