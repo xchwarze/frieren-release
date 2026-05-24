@@ -49,11 +49,13 @@ define Build/Compile
 endef
 
 define Compile/Frontend
+	# Enable Yarn 4 via corepack
+	corepack enable
+
 	# Compile webapp
 	cd $(PKG_BUILD_DIR)/frieren-front && \
-	yarn workspaces focus --production && \
 	yarn install --immutable && \
-	yarn build
+	yarn build --mode prod
 endef
 
 define Compile/Backend
