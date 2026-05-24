@@ -55,7 +55,7 @@ define Compile/Frontend
 	# Compile webapp
 	cd $(PKG_BUILD_DIR)/frieren-front && \
 	yarn install --immutable && \
-	yarn build --mode prod
+	yarn build --mode release
 endef
 
 define Compile/Backend
