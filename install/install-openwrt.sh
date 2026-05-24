@@ -3,6 +3,7 @@
 # Define constants
 BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
 PACKAGE_NAME="frieren"
+PACKAGE_DIST="frieren_1.1-r1_all.ipk"
 
 # Get force install option from command line (if provided)
 FORCE_INSTALL=$1
@@ -29,7 +30,7 @@ get_package_url() {
     local package_url=""
 
     if [ "$version" -ge 20 ]; then
-        package_url="${BASE_URL}/latest/${PACKAGE_NAME}_latest.ipk"
+        package_url="${BASE_URL}/latest/${PACKAGE_DIST}"
     fi
 
     echo "$package_url"
@@ -82,18 +83,14 @@ display_access_url() {
 restart_services() {
     log "Restarting PHP-FPM and NGINX..." "INFO"
     /etc/init.d/nginx restart
-
-    if [ -f "/etc/php8-fpm.conf" ]; then    
-        /etc/init.d/php8-fpm restart
-    else
-        /etc/init.d/php7-fpm restart
-    fi
+    /etc/init.d/php8-fpm restart
 }
 
 # Ensure the script is running on OpenWRT
 if [ -f "/etc/openwrt_release" ]; then
     log "OpenWrt system detected, proceeding with installation..." "INFO"
     log "Note: Frieren is developed and tested for OpenWrt 24.x" "INFO"
+
     uninstall_old_package
     install_package
     restart_services
