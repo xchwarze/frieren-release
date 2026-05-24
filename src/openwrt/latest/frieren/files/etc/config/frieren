@@ -2,6 +2,10 @@
 config settings
 	option sidebar '[]'
 	option theme 'auto'
-
-config settings
-
+	option recon_interface ''
+	option management_interface ''
+	option terminal_autologin '1'
+	option terminal_theme 'nord'
+	option terminal_font_size '14'
+	option terminal_cursor_style 'bar'
+	option terminal_cursor_blink '1'

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frieren
-PKG_VERSION:=1.0
+PKG_VERSION:=1.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -9,7 +9,7 @@ PKG_SOURCE_URL:=https://github.com/xchwarze/frieren.git
 PKG_SOURCE_VERSION:=master
 
 PKG_MAINTAINER:=DSR! <xchwarze@gmail.com>
-PKG_LICENSE:=LGPL-3.0-only
+PKG_LICENSE:=PolyForm-Noncommercial-1.0.0
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 HOST_BUILD_DEPENDS:=nodejs/host yarn/host php/host
@@ -21,7 +21,7 @@ define Package/frieren
 	CATEGORY:=Utilities
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
-	DEPENDS:=+nginx +php8-fpm +php8-mod-mbstring +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd
+	DEPENDS:=+nginx +php8-fpm +php8-mod-mbstring +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
 	PKGARCH:=all
 endef
 
@@ -33,7 +33,8 @@ define Build/Prepare
 	$(call Build/Prepare/Default)
 
 	# Update the .env.prod file with release info
-	sed -i 's/PLACEHOLDER_BUILD/master/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
+	#sed -i 's/PLACEHOLDER_BUILD/master/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
+	sed -i 's/PLACEHOLDER_BUILD/release-$(shell date +%B-%d-%Y)/' $(PKG_BUILD_DIR)/frieren-front/config/.env.prod
 endef
 
 define Build/Compile
@@ -50,16 +51,9 @@ endef
 define Compile/Frontend
 	# Compile webapp
 	cd $(PKG_BUILD_DIR)/frieren-front && \
-	cp config/.env.prod .env && \
 	yarn workspaces focus --production && \
 	yarn install --immutable && \
 	yarn build
-
-	# Clean original assets
-	cd $(PKG_BUILD_DIR)/frieren-front/dist/assets && \
-	rm -f *.js *.css && \
-	mv index.js.gz index.js && \
-	mv index.css.gz index.css
 endef
 
 define Compile/Backend
