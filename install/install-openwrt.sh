@@ -90,6 +90,7 @@ restart_services() {
 if [ -f "/etc/openwrt_release" ]; then
     log "OpenWrt system detected, proceeding with installation..." "INFO"
     log "Note: Frieren is developed and tested for OpenWrt 24.x" "INFO"
+    log "--------------------------------------------------------" "INFO"
 
     uninstall_old_package
     install_package
