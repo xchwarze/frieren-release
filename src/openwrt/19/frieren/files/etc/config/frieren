@@ -1,7 +1,0 @@
-
-config settings
-	option sidebar '[]'
-	option theme 'auto'
-
-config settings
-
