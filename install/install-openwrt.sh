@@ -3,7 +3,7 @@
 # Define constants
 BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
 PACKAGE_NAME="frieren"
-PACKAGE_DIST="frieren_1.1-r1_all.ipk"
+PACKAGE_DIST="frieren_1.2-r1_all.ipk"
 
 # Get force install option from command line (if provided)
 FORCE_INSTALL=$1
