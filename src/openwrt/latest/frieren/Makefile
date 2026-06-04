@@ -33,8 +33,7 @@ define Build/Prepare
 	$(call Build/Prepare/Default)
 
 	# Update the .env.release file with release info
-	#sed -i 's/PLACEHOLDER_BUILD/master/' $(PKG_BUILD_DIR)/frieren-front/config/.env.release
-	sed -i 's/PLACEHOLDER_BUILD/release-$(shell date +%B-%d-%Y)/' $(PKG_BUILD_DIR)/frieren-front/config/.env.release
+	sed -i 's/PLACEHOLDER_BUILD/$(FRIEREN_COMMIT_ID)/' $(PKG_BUILD_DIR)/frieren-front/config/.env.release
 	cat $(PKG_BUILD_DIR)/frieren-front/config/.env.release
 endef
 

@@ -31,6 +31,10 @@ jobs:
 
       - name: Build package
         run: |
+          echo "[*] Resolve latest commit of source repo"
+          FRIEREN_COMMIT_ID=$(git ls-remote https://github.com/xchwarze/frieren.git master | cut -f1 | cut -c1-7)
+          echo "[!] Building commit $FRIEREN_COMMIT_ID"
+
           echo "[*] Prepare feeds"
           cd $SDK_DIR
           echo "src-link frieren $REPO_DIR/src/openwrt/latest" >> feeds.conf
@@ -41,7 +45,7 @@ jobs:
           echo "[*] Build ipk"
           echo "CONFIG_PACKAGE_frieren=m" >> .config
           make defconfig
-          make -j1 V=s package/frieren/compile
+          make -j1 V=s FRIEREN_COMMIT_ID="$FRIEREN_COMMIT_ID" package/frieren/compile
 
       - name: Sync repos
         run: |

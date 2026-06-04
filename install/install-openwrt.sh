@@ -3,10 +3,38 @@
 # Define constants
 BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
 PACKAGE_NAME="frieren"
-PACKAGE_DIST="frieren_1.2-r1_all.ipk"
+PACKAGE_DEFAULT="frieren_1.3-r1_all.ipk"
 
-# Get force install option from command line (if provided)
-FORCE_INSTALL=$1
+# Defaults (PACKAGE_DIST can be preset via environment, overridden by -p)
+PACKAGE_DIST="${PACKAGE_DIST:-$PACKAGE_DEFAULT}"
+FORCE_INSTALL=""
+
+# Usage / help banner
+usage() {
+    cat <<EOF
+Frieren installer for OpenWrt (developed and tested for OpenWrt 24.x)
+
+Usage: $0 [-f] [-p <package>] [-h]
+
+Options:
+  -f             Force install: pass --force-overwrite to opkg on file clashes
+  -p <package>   Package file to install (default: $PACKAGE_DEFAULT)
+  -h             Show this help and exit
+
+The package can also be preset via the PACKAGE_DIST environment variable.
+The -p flag takes precedence over PACKAGE_DIST.
+EOF
+}
+
+# Parse command line arguments
+while getopts "fp:h" opt; do
+    case "$opt" in
+        f) FORCE_INSTALL="-f" ;;
+        p) PACKAGE_DIST="$OPTARG" ;;
+        h) usage; exit 0 ;;
+        *) usage; exit 1 ;;
+    esac
+done
 
 # Logger function
 log() {
@@ -90,6 +118,8 @@ restart_services() {
 if [ -f "/etc/openwrt_release" ]; then
     log "OpenWrt system detected, proceeding with installation..." "INFO"
     log "Note: Frieren is developed and tested for OpenWrt 24.x" "INFO"
+    log "Package: $PACKAGE_DIST" "INFO"
+    [ "$FORCE_INSTALL" = "-f" ] && log "Force install: enabled" "INFO"
     log "--------------------------------------------------------" "INFO"
 
     uninstall_old_package
