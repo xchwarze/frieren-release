@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frieren
-PKG_VERSION:=1.3
+PKG_VERSION:=1.4
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -21,7 +21,7 @@ define Package/frieren
 	CATEGORY:=Utilities
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
-	DEPENDS:=+nginx +php8-fpm +php8-mod-mbstring +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
+	DEPENDS:=+nginx +php8-fpm +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
 	PKGARCH:=all
 endef
 
