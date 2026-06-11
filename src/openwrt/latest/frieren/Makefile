@@ -91,4 +91,20 @@ define Package/frieren/install
 	$(CP) -r $(PKG_BUILD_DIR)/frieren $(1)/usr/share/
 endef
 
+define Package/frieren/postinst
+#!/bin/sh
+# Frieren runs its own ttyd instance (terminal module, bound to br-lan:5001).
+# Stop and disable the stock ttyd service so it neither auto-starts on boot nor
+# competes with the Frieren-managed instance. Skip when building an image
+# offline (IPKG_INSTROOT set) — only act on a live system.
+[ -n "$${IPKG_INSTROOT}" ] && exit 0
+
+if [ -x /etc/init.d/ttyd ]; then
+	/etc/init.d/ttyd stop
+	/etc/init.d/ttyd disable
+fi
+
+exit 0
+endef
+
 $(eval $(call BuildPackage,$(PKG_NAME)))
