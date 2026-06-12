@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frieren
-PKG_VERSION:=1.4
+PKG_VERSION:=1.4.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
