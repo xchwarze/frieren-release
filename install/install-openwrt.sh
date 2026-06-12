@@ -3,7 +3,7 @@
 # Define constants
 BASE_URL="https://raw.githubusercontent.com/xchwarze/frieren-release/master/packages/openwrt"
 PACKAGE_NAME="frieren"
-PACKAGE_DEFAULT="frieren_1.4-r1_all.ipk"
+PACKAGE_DEFAULT="frieren_1.4.1-r1_all.ipk"
 
 # Defaults (PACKAGE_DIST can be preset via environment, overridden by -p)
 PACKAGE_DIST="${PACKAGE_DIST:-$PACKAGE_DEFAULT}"
