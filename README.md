@@ -53,7 +53,7 @@ Contributions to the `frieren-release` repository are welcome. Enhancements to i
 
 ## License
 
-Like the main Frieren project, the contents of this repository are licensed under the LGPL-3.0-only License. This license allows for extensive collaboration and distribution of the software.
+Like the main Frieren project, the contents of this repository are licensed under the PolyForm Noncommercial License 1.0.0. Free for noncommercial use; commercial use requires a separate license — contact xchwarze@gmail.com. See [LICENSE.md](LICENSE.md).
 
 ## Contact
 
