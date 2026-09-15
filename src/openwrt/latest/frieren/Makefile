@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frieren
-PKG_VERSION:=1.4.1
+PKG_VERSION:=1.5.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -22,6 +22,7 @@ define Package/frieren
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
 	DEPENDS:=+nginx +php8-fpm +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
+	# +php8-mod-opcache pending: enable together with the [opcache] block in files/etc/php.ini
 	PKGARCH:=all
 endef
 
@@ -103,6 +104,11 @@ if [ -x /etc/init.d/ttyd ]; then
 	/etc/init.d/ttyd stop
 	/etc/init.d/ttyd disable
 fi
+
+# Reload php8-fpm so upgraded api/modules files are picked up by already-running
+# workers (matters once opcache is enabled — stale bytecode would otherwise be
+# served until a manual restart).
+[ -x /etc/init.d/php8-fpm ] && /etc/init.d/php8-fpm restart
 
 exit 0
 endef
