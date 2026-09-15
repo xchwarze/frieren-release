@@ -21,8 +21,7 @@ define Package/frieren
 	CATEGORY:=Utilities
 	TITLE:=Frieren - universal security tool for routers and SBCs
 	URL:=https://github.com/xchwarze/frieren
-	DEPENDS:=+nginx +php8-fpm +php8-mod-session +php8-mod-sqlite3 +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
-	# +php8-mod-opcache pending: enable together with the [opcache] block in files/etc/php.ini
+	DEPENDS:=+nginx +php8-fpm +php8-mod-session +php8-mod-sqlite3 +php8-mod-opcache +coreutils-nohup +uclient-fetch +usbutils +ttyd +rpcd-mod-iwinfo +rpcd-mod-luci
 	PKGARCH:=all
 endef
 
