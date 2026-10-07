@@ -93,22 +93,27 @@ endef
 
 define Package/frieren/postinst
 #!/bin/sh
-# Frieren runs its own ttyd instance (terminal module, bound to br-lan:5001).
-# Stop and disable the stock ttyd service so it neither auto-starts on boot nor
-# competes with the Frieren-managed instance. Skip when building an image
-# offline (IPKG_INSTROOT set) — only act on a live system.
-[ -n "$${IPKG_INSTROOT}" ] && exit 0
 
-if [ -x /etc/init.d/ttyd ]; then
-	/etc/init.d/ttyd stop
-	/etc/init.d/ttyd disable
+# Only act on a live system, not when building an image offline.
+if [ -n "$${IPKG_INSTROOT}" ]; then
+	exit 0
 fi
 
-# Reload php8-fpm so upgraded api/modules files are picked up by already-running
-# workers (matters once opcache is enabled — stale bytecode would otherwise be
-# served until a manual restart).
-[ -x /etc/init.d/php8-fpm ] && /etc/init.d/php8-fpm restart
+# Frieren runs its own ttyd instance (terminal module, bound to br-lan:5001).
+# Stop and disable the stock ttyd service so it neither auto-starts on boot nor
+# competes with the Frieren-managed instance.
+if [ -x /etc/init.d/ttyd ]; then
+	/etc/init.d/ttyd stop >/dev/null 2>&1
+	/etc/init.d/ttyd disable >/dev/null 2>&1
+fi
 
+# Restart php8-fpm so running workers pick up the new api/modules files
+# (with opcache enabled they would otherwise keep serving stale bytecode).
+if [ -x /etc/init.d/php8-fpm ]; then
+	/etc/init.d/php8-fpm restart >/dev/null 2>&1
+fi
+
+# https://www.youtube.com/watch?v=wnw3YwlvTvw
 exit 0
 endef
 
